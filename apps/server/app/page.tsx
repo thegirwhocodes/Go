@@ -1,20 +1,20 @@
-import Link from 'next/link';
+import Link from "next/link";
 
 export const metadata = {
-  title: 'Class on Time — the commitment device for showing up.',
+  title: "go. — get to class, or pay $100",
   description:
-    'Class on Time reads your calendar, walks you to class 30 minutes early, and charges you $100 every time you’re late. The honest accountability app for people who keep failing themselves.',
+    "Go connects your calendar, walks you to class 30 minutes early, and charges $100 if you’re late.",
 };
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-amber-50 text-amber-950 antialiased">
+    <main className="min-h-screen">
       <Nav />
       <Hero />
-      <SocialProof />
-      <Features />
+      <Stake />
       <HowItWorks />
-      <Pricing />
+      <MoneyMoves />
+      <FounderNote />
       <FAQ />
       <CTA />
       <Footer />
@@ -22,25 +22,29 @@ export default function Home() {
   );
 }
 
+function Wordmark({ className = "" }: { className?: string }) {
+  return (
+    <span className={`font-display font-bold tracking-tight inline-flex items-baseline ${className}`}>
+      go<span className="text-[var(--orange)]">.</span>
+    </span>
+  );
+}
+
 function Nav() {
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-md bg-amber-50/80 border-b border-amber-900/10">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">🌳</span>
-          <span className="text-lg font-black tracking-tight">Class on Time</span>
-        </div>
-        <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-amber-900/80">
-          <a href="#features" className="hover:text-amber-950">Features</a>
-          <a href="#how" className="hover:text-amber-950">How it works</a>
-          <a href="#pricing" className="hover:text-amber-950">Pricing</a>
-          <a href="#faq" className="hover:text-amber-950">FAQ</a>
+    <header className="sticky top-0 z-50 bg-[var(--bg)]/85 backdrop-blur border-b border-[var(--neutral)]">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+        <Wordmark className="text-2xl" />
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[var(--ink)]/75">
+          <a href="#how" className="hover:text-[var(--ink)]">How it works</a>
+          <a href="#pricing" className="hover:text-[var(--ink)]">Pricing</a>
+          <a href="#faq" className="hover:text-[var(--ink)]">FAQ</a>
         </nav>
         <Link
           href="#waitlist"
-          className="rounded-full bg-amber-950 px-5 py-2 text-sm font-bold text-amber-50 hover:bg-amber-900 transition"
+          className="rounded-full bg-[var(--ink)] px-5 py-2 text-sm font-semibold text-[var(--bg)] hover:bg-[var(--ink)]/85 transition"
         >
-          Join waitlist
+          Get the app
         </Link>
       </div>
     </header>
@@ -49,142 +53,179 @@ function Nav() {
 
 function Hero() {
   return (
-    <section className="mx-auto max-w-6xl px-6 pt-24 pb-32 text-center">
-      <div className="inline-flex items-center gap-2 rounded-full bg-orange-100 px-4 py-1.5 text-xs font-bold text-orange-900 mb-8">
-        <span className="h-2 w-2 rounded-full bg-orange-500 animate-pulse" />
-        Now in private alpha
+    <section className="relative overflow-hidden">
+      <div className="mx-auto grid max-w-6xl gap-12 px-6 pt-20 pb-28 md:grid-cols-[1.2fr_1fr] md:items-center md:gap-16">
+        <MapShot />
+        <div>
+          <div className="inline-flex items-center gap-2 rounded-full bg-[var(--neutral-card)] px-3 py-1 text-xs font-medium text-[var(--ink)]/70 ring-1 ring-[var(--neutral)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--orange)]" />
+            Now in private alpha
+          </div>
+          <h1 className="font-display mt-6 text-[clamp(48px,7vw,92px)] font-bold leading-[0.95] tracking-tight">
+            Get to class.
+            <br />
+            <span className="text-[var(--orange)]">Or pay $100.</span>
+          </h1>
+          <p className="mt-7 max-w-md text-lg leading-relaxed text-[var(--ink)]/70">
+            Go connects your calendar, walks you to class thirty minutes early, and charges $100 every time you don&apos;t make it.
+          </p>
+          <div className="mt-9 flex flex-wrap items-center gap-3">
+            <Link
+              href="#waitlist"
+              className="rounded-full bg-[var(--ink)] px-7 py-3.5 text-base font-semibold text-[var(--bg)] hover:bg-[var(--ink)]/85 transition"
+            >
+              Connect calendar →
+            </Link>
+            <Link
+              href="#how"
+              className="rounded-full px-6 py-3.5 text-base font-semibold text-[var(--ink)]/80 hover:text-[var(--ink)] transition"
+            >
+              How it works
+            </Link>
+          </div>
+          <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--orange)]/10 px-3 py-1.5 text-xs font-mono font-medium text-[var(--orange)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--orange)] animate-pulse" />
+            Live $100 stake · Apple Pay or bank
+          </p>
+        </div>
       </div>
-      <h1 className="text-5xl sm:text-7xl md:text-8xl font-black tracking-tight leading-[1.02]">
-        Show up early.
-        <br />
-        <span className="text-orange-500">Or pay $100.</span>
-      </h1>
-      <p className="mx-auto mt-8 max-w-2xl text-xl text-amber-900/80 leading-relaxed">
-        Class on Time is a commitment device for people who keep failing themselves. We connect to your calendar, walk you to class 30 minutes early, and charge you $100 every time you don&apos;t make it. No exceptions, no excuses, no escape.
-      </p>
-      <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-        <Link
-          href="#waitlist"
-          className="rounded-full bg-amber-950 px-8 py-4 text-base font-bold text-amber-50 hover:bg-amber-900 transition shadow-lg"
-        >
-          Get early access →
-        </Link>
-        <Link
-          href="#how"
-          className="rounded-full border-2 border-amber-950/20 px-8 py-4 text-base font-bold text-amber-950 hover:bg-amber-100 transition"
-        >
-          See how it works
-        </Link>
-      </div>
-      <ProductShot />
     </section>
   );
 }
 
-function ProductShot() {
+// Stylized campus map with an animated route. Not a real Mapbox embed —
+// chosen for instant load + reliability. Real interactive map is in the
+// mobile app where it belongs.
+function MapShot() {
   return (
-    <div className="mt-20 mx-auto max-w-4xl">
-      <div className="rounded-[2.5rem] border-4 border-amber-900/15 bg-gradient-to-b from-orange-200 via-amber-200 to-yellow-100 p-10 shadow-2xl">
-        <div className="flex items-center justify-between text-8xl">
-          <span title="you" className="drop-shadow-lg">🧍‍♀️</span>
-          <span className="text-base font-mono text-amber-900/50 tracking-widest">— 12 MIN WALK —</span>
-          <span title="library" className="drop-shadow-lg">🏛️</span>
+    <div className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl bg-[#1a1d24] shadow-2xl ring-1 ring-[var(--ink)]/10 md:aspect-[5/6]">
+      {/* dusk gradient sky */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#2a1d3a] via-[#3a2a35] to-[#1f2d3a]" />
+
+      {/* ambient golden glow at the route's midpoint */}
+      <div className="absolute left-1/2 top-1/3 h-72 w-72 -translate-x-1/2 rounded-full bg-[var(--orange)]/30 blur-3xl" />
+
+      {/* low-poly campus blocks */}
+      <svg className="absolute inset-0 h-full w-full" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="block" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor="#3d3851" />
+            <stop offset="100%" stopColor="#2a253d" />
+          </linearGradient>
+          <linearGradient id="block2" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor="#4a3a45" />
+            <stop offset="100%" stopColor="#332732" />
+          </linearGradient>
+        </defs>
+
+        {/* roads */}
+        <path d="M 0 380 Q 200 360 400 400" stroke="#3a3a4a" strokeWidth="22" fill="none" opacity="0.7" />
+        <path d="M 60 0 Q 80 250 120 500" stroke="#3a3a4a" strokeWidth="18" fill="none" opacity="0.6" />
+        <path d="M 250 0 Q 280 200 320 500" stroke="#3a3a4a" strokeWidth="14" fill="none" opacity="0.5" />
+
+        {/* trees scattered */}
+        {[
+          [40, 100], [90, 60], [160, 130], [220, 80], [330, 50],
+          [50, 230], [340, 200], [60, 320], [380, 320], [180, 460], [380, 460],
+        ].map(([cx, cy], i) => (
+          <g key={i} transform={`translate(${cx} ${cy})`}>
+            <circle r="9" fill="#1d3a2e" opacity="0.95" />
+            <circle r="6" fill="#2d5a44" opacity="0.95" />
+            <circle r="3" fill="#4a8867" opacity="0.6" />
+          </g>
+        ))}
+
+        {/* buildings — low-poly */}
+        <g>
+          <polygon points="120,180 200,160 200,260 120,260" fill="url(#block)" />
+          <polygon points="120,180 200,160 200,180 120,200" fill="#4a4366" opacity="0.6" />
+        </g>
+        <g>
+          <polygon points="220,130 290,115 290,210 220,225" fill="url(#block2)" />
+          <polygon points="220,130 290,115 290,135 220,150" fill="#5a4555" opacity="0.6" />
+        </g>
+        <g>
+          <polygon points="240,300 340,280 340,400 240,420" fill="url(#block)" />
+          <polygon points="240,300 340,280 340,305 240,325" fill="#4a4366" opacity="0.6" />
+          {/* gold-lit window */}
+          <rect x="270" y="330" width="14" height="18" fill="#ffb86b" opacity="0.9" />
+          <rect x="295" y="328" width="14" height="18" fill="#ffb86b" opacity="0.7" />
+        </g>
+
+        {/* the route line (animated stroke draw) */}
+        <path
+          className="route-line"
+          d="M 70 430 Q 130 380 165 320 Q 200 270 250 280 Q 290 290 295 340"
+          stroke="#FF5C1A"
+          strokeWidth="5"
+          fill="none"
+          strokeLinecap="round"
+        />
+
+        {/* destination pin */}
+        <g transform="translate(295 340)">
+          <circle r="14" fill="#FF5C1A" opacity="0.25" />
+          <circle r="8" fill="#FF5C1A" />
+          <circle r="3" fill="#FAFAF7" />
+        </g>
+
+        {/* walker sprite at the start */}
+        <g transform="translate(70 430)" className="walk-bob">
+          <circle r="10" fill="#0A0A0A" />
+          <circle r="6" fill="#FAFAF7" />
+          <text x="0" y="3" textAnchor="middle" fontSize="9">🚶‍♀️</text>
+        </g>
+      </svg>
+
+      {/* floating UI card — Uber-style "leave at" */}
+      <div className="absolute bottom-4 left-4 right-4 rounded-2xl bg-[var(--bg)] p-4 shadow-lg ring-1 ring-[var(--ink)]/5">
+        <div className="flex items-baseline justify-between">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-[var(--ink)]/50">Next class</p>
+            <p className="mt-0.5 font-display text-lg font-semibold">Econ 333 — Olin Library</p>
+          </div>
+          <p className="font-mono text-[10px] uppercase tracking-widest text-[var(--ink)]/50">4:00 pm</p>
         </div>
-        <div className="mt-8 grid grid-cols-3 gap-3 text-sm font-mono text-amber-900/70">
-          <div className="rounded-2xl bg-amber-50/80 p-4 text-center backdrop-blur">
-            <div className="text-3xl">🗓️</div>
-            <div className="mt-2 text-xs uppercase tracking-wide">Next class</div>
-            <div className="font-bold text-amber-950 mt-1">Econ 333</div>
-            <div className="text-xs">4:00 pm</div>
+        <div className="mt-3 flex items-center justify-between border-t border-[var(--neutral)] pt-3">
+          <div className="flex items-center gap-2 text-sm font-medium">
+            <span className="h-2 w-2 rounded-full bg-[var(--forest)]" />
+            Leave by <span className="font-display font-bold">3:18 pm</span>
           </div>
-          <div className="rounded-2xl bg-amber-50/80 p-4 text-center backdrop-blur">
-            <div className="text-3xl">⏰</div>
-            <div className="mt-2 text-xs uppercase tracking-wide">Leave by</div>
-            <div className="font-bold text-amber-950 mt-1">3:18 pm</div>
-            <div className="text-xs">in 42 min</div>
-          </div>
-          <div className="rounded-2xl bg-amber-50/80 p-4 text-center backdrop-blur">
-            <div className="text-3xl">💸</div>
-            <div className="mt-2 text-xs uppercase tracking-wide">On the line</div>
-            <div className="font-bold text-amber-950 mt-1">$100</div>
-            <div className="text-xs">if late</div>
-          </div>
+          <span className="rounded-full bg-[var(--orange)]/10 px-2.5 py-1 font-mono text-[10px] font-bold text-[var(--orange)]">
+            $100 ON THE LINE
+          </span>
         </div>
       </div>
     </div>
   );
 }
 
-function SocialProof() {
+function Stake() {
   return (
-    <section className="border-y border-amber-900/10 bg-amber-100/40 py-12">
-      <div className="mx-auto max-w-5xl px-6">
-        <p className="text-center text-xs font-bold uppercase tracking-widest text-amber-900/60 mb-8">
-          Built on tools you trust
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6 text-amber-900/70 font-semibold">
-          <span>Stripe</span>
-          <span>Apple Pay</span>
-          <span>Google Calendar</span>
-          <span>Mapbox</span>
-          <span>iOS</span>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Features() {
-  const items = [
-    {
-      icon: '🗓️',
-      title: 'Calendar-native',
-      body: 'Connect Google Calendar once. Every class, exam, and meeting becomes a commitment automatically. No manual setup.',
-    },
-    {
-      icon: '🗣️',
-      title: 'Voice roll call',
-      body: 'Every morning at 7am, the app asks you out loud: are you going to today’s classes? You answer by voice. Audio saved as proof.',
-    },
-    {
-      icon: '🗺️',
-      title: 'Live walking map',
-      body: 'A cartoon 3D map of your campus walks alongside you. GPS-verified arrival — you can’t fake being there.',
-    },
-    {
-      icon: '💸',
-      title: 'Automatic penalty',
-      body: 'Late? $100 charged silently via Apple Pay or your bank. Cancel early ($25) or late ($100). Same money either way.',
-    },
-    {
-      icon: '🔒',
-      title: 'No escape',
-      body: 'You can’t remove your card to dodge a charge. A 7-day lockup means the bill clears before the method detaches.',
-    },
-    {
-      icon: '🧠',
-      title: 'Learns your places',
-      body: '“Gym” means Freeman the first time you confirm it. After that, the app remembers — every commitment routes correctly.',
-    },
-  ];
-  return (
-    <section id="features" className="py-24">
+    <section id="pricing" className="border-y border-[var(--neutral)] bg-[var(--neutral-card)]/40 py-24">
       <div className="mx-auto max-w-6xl px-6">
-        <div className="text-center mb-16">
-          <p className="text-sm font-bold uppercase tracking-widest text-orange-600">Features</p>
-          <h2 className="mt-3 text-5xl font-black tracking-tight">
-            Designed so you can&apos;t talk yourself out of it.
-          </h2>
+        <p className="text-center font-mono text-xs font-medium uppercase tracking-widest text-[var(--ink)]/50">
+          The deal
+        </p>
+        <div className="mt-8 grid gap-4 md:grid-cols-2 md:gap-8">
+          <div className="reveal rounded-3xl bg-[var(--bg)] p-10 ring-1 ring-[var(--neutral)]">
+            <p className="font-mono text-xs uppercase tracking-widest text-[var(--forest)]">To use Go</p>
+            <p className="font-display mt-4 text-[clamp(64px,10vw,128px)] font-bold leading-none tracking-tight">$0</p>
+            <p className="mt-4 text-base text-[var(--ink)]/65">
+              Unlimited calendar commitments. Voice roll call. Walking map. No subscription. No premium tier.
+            </p>
+          </div>
+          <div className="reveal rounded-3xl bg-[var(--ink)] p-10 text-[var(--bg)]">
+            <p className="font-mono text-xs uppercase tracking-widest text-[var(--orange)]">If you&apos;re late</p>
+            <p className="font-display mt-4 text-[clamp(64px,10vw,128px)] font-bold leading-none tracking-tight text-[var(--orange)]">$100</p>
+            <p className="mt-4 text-base text-[var(--bg)]/65">
+              Charged silently when you miss the geofence by even a minute. Cancel ≥ 2 hours before for $25 — within 2 hours, also $100.
+            </p>
+          </div>
         </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {items.map((f) => (
-            <div key={f.title} className="rounded-3xl bg-orange-50 p-7 border border-amber-900/5 hover:border-orange-300 transition">
-              <div className="text-4xl mb-4">{f.icon}</div>
-              <h3 className="text-xl font-black">{f.title}</h3>
-              <p className="mt-2 text-amber-900/80 leading-relaxed">{f.body}</p>
-            </div>
-          ))}
-        </div>
+        <p className="mt-10 mx-auto max-w-lg text-center text-sm text-[var(--ink)]/55">
+          We make money from your failures. Which means we&apos;re aligned with you preventing them.
+        </p>
       </div>
     </section>
   );
@@ -192,26 +233,44 @@ function Features() {
 
 function HowItWorks() {
   const steps = [
-    { n: '01', title: 'Connect', body: 'Google Calendar + a payment method. Apple Pay works in 30 seconds; ACH via your bank in 90.' },
-    { n: '02', title: 'Commit', body: 'Each morning, speak your day out loud. The app records every “yes” and saves it as evidence.' },
-    { n: '03', title: 'Walk', body: 'The map fires a notification 30 minutes before required arrival. Follow the route, hit the geofence on time — pay nothing.' },
-    { n: '04', title: 'Or pay', body: 'Miss the geofence by even a minute, and $100 is charged off-session. No notifications. No appeals. That’s the point.' },
+    {
+      n: "01",
+      title: "Connect",
+      body: "Google Calendar + Apple Pay or your bank. Once, in under 90 seconds.",
+    },
+    {
+      n: "02",
+      title: "Commit",
+      body: "Every morning, speak your day out loud. The app records each “yes” as binding evidence.",
+    },
+    {
+      n: "03",
+      title: "Walk",
+      body: "The map fires a notification thirty minutes early. Follow the route. Hit the geofence on time.",
+    },
+    {
+      n: "04",
+      title: "Or pay",
+      body: "Miss the geofence by a minute and the charge fires off-session. No appeals. That’s the point.",
+    },
   ];
   return (
-    <section id="how" className="bg-amber-900 text-amber-50 py-24">
+    <section id="how" className="bg-[var(--ink)] py-28 text-[var(--bg)]">
       <div className="mx-auto max-w-6xl px-6">
-        <div className="text-center mb-16">
-          <p className="text-sm font-bold uppercase tracking-widest text-orange-300">How it works</p>
-          <h2 className="mt-3 text-5xl font-black tracking-tight">
-            Four steps. No way around any of them.
+        <div className="max-w-2xl">
+          <p className="font-mono text-xs font-medium uppercase tracking-widest text-[var(--orange)]">How it works</p>
+          <h2 className="font-display mt-3 text-[clamp(40px,5vw,64px)] font-bold leading-[1.05] tracking-tight">
+            Four steps.
+            <br />
+            No way around any of them.
           </h2>
         </div>
-        <ol className="grid gap-8 md:grid-cols-4">
+        <ol className="mt-16 grid gap-12 md:grid-cols-4">
           {steps.map((s) => (
-            <li key={s.n}>
-              <div className="font-mono text-sm font-bold text-orange-300 tracking-wider">{s.n}</div>
-              <div className="mt-2 text-2xl font-black">{s.title}</div>
-              <p className="mt-3 text-amber-100/80 leading-relaxed">{s.body}</p>
+            <li key={s.n} className="reveal">
+              <p className="font-mono text-sm font-medium tracking-widest text-[var(--orange)]">{s.n}</p>
+              <p className="font-display mt-3 text-2xl font-semibold">{s.title}</p>
+              <p className="mt-3 leading-relaxed text-[var(--bg)]/65">{s.body}</p>
             </li>
           ))}
         </ol>
@@ -220,45 +279,98 @@ function HowItWorks() {
   );
 }
 
-function Pricing() {
+function MoneyMoves() {
   return (
-    <section id="pricing" className="py-24">
-      <div className="mx-auto max-w-3xl px-6 text-center">
-        <p className="text-sm font-bold uppercase tracking-widest text-orange-600">Pricing</p>
-        <h2 className="mt-3 text-5xl font-black tracking-tight">Free to start. $100 if you fail.</h2>
-        <p className="mt-6 text-lg text-amber-900/80">
-          You only pay when you don&apos;t show up. No subscription, no monthly fee, no premium tier. The app makes money from your future failures — which means we&apos;re aligned with you preventing them.
+    <section className="py-28">
+      <div className="mx-auto max-w-5xl px-6">
+        <div className="max-w-2xl">
+          <p className="font-mono text-xs font-medium uppercase tracking-widest text-[var(--ink)]/50">How the money moves</p>
+          <h2 className="font-display mt-3 text-[clamp(36px,4.5vw,56px)] font-bold leading-[1.05] tracking-tight">
+            Transparent on purpose.
+          </h2>
+        </div>
+        <div className="mt-12 grid items-stretch gap-3 md:grid-cols-[1fr_auto_1fr_auto_1fr]">
+          <FlowCard label="Card or bank linked" sub="via Stripe Setup­Intent (off-session)" />
+          <Arrow />
+          <FlowCard label="Arrival verified" sub="50m geofence around the building" highlight />
+          <Arrow />
+          <FlowCard label="$0 charged" sub="If you made it on time" subColor="forest" />
+        </div>
+        <div className="mt-3 grid items-stretch gap-3 md:grid-cols-[1fr_auto_1fr_auto_1fr]">
+          <FlowCard label="Card or bank linked" sub="via Stripe Setup­Intent (off-session)" muted />
+          <Arrow muted />
+          <FlowCard label="Geofence missed" sub="GPS confirms you weren't there" muted />
+          <Arrow muted />
+          <FlowCard label="$100 charged" sub="Silent · automatic · no email" subColor="orange" />
+        </div>
+        <p className="mt-10 max-w-lg text-sm text-[var(--ink)]/55">
+          We can&apos;t fake an arrival. You can&apos;t fake an arrival. The geofence is the only judge.
         </p>
-        <div className="mt-12 rounded-3xl border-4 border-amber-950/10 bg-amber-100/40 p-10 text-left">
-          <div className="flex flex-wrap items-baseline justify-between gap-4 border-b border-amber-950/10 pb-6">
-            <h3 className="text-3xl font-black">Class on Time</h3>
-            <div>
-              <span className="text-5xl font-black">$0</span>
-              <span className="text-amber-900/60">/mo</span>
-            </div>
-          </div>
-          <ul className="mt-6 space-y-3 text-amber-950">
-            <li className="flex items-start gap-3">
-              <span className="text-green-600 font-bold mt-0.5">✓</span>
-              <span>Unlimited calendar commitments tracked</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-green-600 font-bold mt-0.5">✓</span>
-              <span>Voice-driven morning roll call</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-green-600 font-bold mt-0.5">✓</span>
-              <span>3D walking map with departure alerts</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-amber-900 font-bold mt-0.5">$100</span>
-              <span>per late arrival or no-show, charged automatically</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-amber-900 font-bold mt-0.5">$25</span>
-              <span>per cancellation made more than 2 hours before</span>
-            </li>
-          </ul>
+      </div>
+    </section>
+  );
+}
+
+function FlowCard({
+  label,
+  sub,
+  highlight = false,
+  muted = false,
+  subColor = "ink",
+}: {
+  label: string;
+  sub: string;
+  highlight?: boolean;
+  muted?: boolean;
+  subColor?: "ink" | "forest" | "orange";
+}) {
+  const subTint =
+    subColor === "forest"
+      ? "text-[var(--forest)]"
+      : subColor === "orange"
+      ? "text-[var(--orange)]"
+      : "text-[var(--ink)]/55";
+  return (
+    <div
+      className={`reveal rounded-2xl p-5 ring-1 ${
+        highlight
+          ? "bg-[var(--ink)] text-[var(--bg)] ring-[var(--ink)]"
+          : muted
+          ? "bg-[var(--neutral-card)]/50 ring-[var(--neutral)]"
+          : "bg-[var(--bg)] ring-[var(--neutral)]"
+      }`}
+    >
+      <p className={`font-display text-base font-semibold ${highlight ? "" : ""}`}>{label}</p>
+      <p className={`mt-1 text-xs font-medium ${highlight ? "text-[var(--bg)]/70" : subTint}`}>{sub}</p>
+    </div>
+  );
+}
+
+function Arrow({ muted = false }: { muted?: boolean }) {
+  return (
+    <div className={`hidden items-center justify-center md:flex ${muted ? "text-[var(--ink)]/30" : "text-[var(--ink)]/50"}`}>
+      <svg width="22" height="14" viewBox="0 0 22 14" fill="none">
+        <path d="M1 7H21M21 7L15 1M21 7L15 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </div>
+  );
+}
+
+function FounderNote() {
+  return (
+    <section className="bg-[var(--neutral-card)]/40 py-24">
+      <div className="mx-auto max-w-2xl px-6">
+        <p className="font-mono text-xs font-medium uppercase tracking-widest text-[var(--ink)]/50">A note from the founder</p>
+        <div className="mt-6 space-y-4 text-lg leading-relaxed text-[var(--ink)]/85">
+          <p>
+            I&apos;ve tried alarms, calendar apps, accountability buddies, and every productivity system marketed at students. I was still late to class. Repeatedly. Embarrassingly.
+          </p>
+          <p>
+            The thing that finally worked, for me, was money. A real charge — not a pop-up, not a streak I could ignore. Go is the cleanest implementation of that I could build. If it works for me, it might work for you.
+          </p>
+          <p className="text-base text-[var(--ink)]/60">
+            — Naomi · Wesleyan &apos;27
+          </p>
         </div>
       </div>
     </section>
@@ -268,45 +380,54 @@ function Pricing() {
 function FAQ() {
   const items = [
     {
-      q: 'What if I get sick or have a real emergency?',
-      a: 'You can cancel any commitment up to 2 hours before required arrival for $25. Same-day cancellations within 2 hours are treated as no-shows ($100). The point of a commitment device is that even genuine reasons cost something — otherwise people use "emergency" as a loophole.',
+      q: "What if I have a real emergency?",
+      a: "You can cancel up to two hours before required arrival for $25. Inside two hours it&apos;s the full $100 — same as being late. We treat genuine emergencies the same as everyone else, because the moment we don&apos;t, every late arrival becomes an “emergency.”",
     },
     {
-      q: 'Can I just remove my payment method to dodge a charge?',
-      a: 'No. Removing a payment method triggers a 7-day lockup before it actually detaches. That gives the app plenty of time to settle outstanding charges before your method disappears. This is the core anti-escape mechanism — it’s why the app works.',
+      q: "Can I just remove my card to dodge a charge?",
+      a: "No. Removing a payment method triggers a 7-day lockup before it actually detaches. The bill clears before your card disappears. This is the anti-escape mechanism — it&apos;s why the app works.",
     },
     {
-      q: 'How do you know if I was actually late?',
-      a: 'GPS geofence. Your phone has to enter a 50-meter radius around the building before required-arrival time. We don’t take your word for it — your phone’s location services confirm it, recorded and timestamped.',
+      q: "How do you know if I was late?",
+      a: "GPS geofence. Your phone has to enter a 50-meter radius around the building before required-arrival time. We don&apos;t take your word for it; your phone&apos;s location services do.",
     },
     {
-      q: 'Where does my $100 go?',
-      a: 'During alpha, charges go to a holding account while we figure out the right answer. The frontrunner is donating it to a charity you specifically don’t support — the standard "anti-charity" pattern from StickK. Final answer comes before public launch.',
+      q: "Where does the $100 go?",
+      a: "During alpha, charges go to a holding account while we figure out the right destination. The frontrunner is an anti-charity — a cause you specifically don&apos;t support. Final answer ships before public launch.",
     },
     {
-      q: 'iOS only?',
-      a: 'For now, yes. Android is on the roadmap once we’ve proven the iOS version works at scale.',
+      q: "iOS only?",
+      a: "For now, yes. Android once iOS is proven.",
     },
     {
-      q: 'Who built this?',
-      a: 'A Wesleyan University student who kept being late to class and ran out of self-improvement tricks. Built for herself first; opening up because the friends who saw the demo all asked when they could have it.',
+      q: "Who built this?",
+      a: "A Wesleyan student who kept being late. Built for herself first; opened up because every friend who saw the demo asked when they could have it.",
     },
   ];
   return (
-    <section id="faq" className="bg-orange-50 py-24">
+    <section id="faq" className="py-24">
       <div className="mx-auto max-w-3xl px-6">
-        <div className="text-center mb-12">
-          <p className="text-sm font-bold uppercase tracking-widest text-orange-600">FAQ</p>
-          <h2 className="mt-3 text-5xl font-black tracking-tight">Reasonable questions.</h2>
+        <div className="max-w-xl">
+          <p className="font-mono text-xs font-medium uppercase tracking-widest text-[var(--ink)]/50">Reasonable questions</p>
+          <h2 className="font-display mt-3 text-[clamp(40px,5vw,56px)] font-bold tracking-tight leading-[1.05]">
+            We thought of these.
+          </h2>
         </div>
-        <div className="space-y-4">
-          {items.map((item) => (
-            <details key={item.q} className="group rounded-2xl bg-white border border-amber-900/10 p-6 [&_summary::-webkit-details-marker]:hidden">
-              <summary className="flex cursor-pointer items-center justify-between gap-4 text-lg font-bold">
-                {item.q}
-                <span className="text-amber-900/40 group-open:rotate-45 transition">+</span>
+        <div className="mt-10 divide-y divide-[var(--neutral)] border-y border-[var(--neutral)]">
+          {items.map((it) => (
+            <details key={it.q} className="group py-5 [&_summary::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer items-start justify-between gap-6 text-lg font-medium text-[var(--ink)]">
+                {it.q}
+                <span className="mt-1 text-[var(--ink)]/40 transition group-open:rotate-45">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M7 1V13M1 7H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                </span>
               </summary>
-              <p className="mt-4 text-amber-900/80 leading-relaxed">{item.a}</p>
+              <p
+                className="mt-4 max-w-2xl leading-relaxed text-[var(--ink)]/70"
+                dangerouslySetInnerHTML={{ __html: it.a }}
+              />
             </details>
           ))}
         </div>
@@ -317,21 +438,21 @@ function FAQ() {
 
 function CTA() {
   return (
-    <section id="waitlist" className="bg-amber-950 py-24 text-amber-50">
+    <section id="waitlist" className="bg-[var(--ink)] py-28 text-[var(--bg)]">
       <div className="mx-auto max-w-2xl px-6 text-center">
-        <h2 className="text-5xl font-black tracking-tight">Stop being late to class.</h2>
-        <p className="mt-6 text-xl text-amber-100/80">
-          Private alpha is open to a small batch of college students this semester. Get on the waitlist for an invite.
+        <h2 className="font-display text-[clamp(40px,6vw,80px)] font-bold tracking-tight leading-[1]">
+          Stop being late.
+        </h2>
+        <p className="mt-6 text-lg text-[var(--bg)]/65">
+          Private alpha is open to a small batch of college students this semester.
         </p>
         <a
-          href="mailto:hello@classontime.app?subject=Class%20on%20Time%20waitlist&body=I%20want%20early%20access.%0A%0AName%3A%0ASchool%3A%0AWhy%3A"
-          className="mt-10 inline-block rounded-full bg-orange-400 px-10 py-4 text-lg font-black text-amber-950 hover:bg-orange-300 transition shadow-xl"
+          href="mailto:hello@go-place.vercel.app?subject=go.%20waitlist&body=I%20want%20early%20access.%0A%0AName%3A%0ASchool%3A%0AWhy%3A"
+          className="mt-10 inline-block rounded-full bg-[var(--orange)] px-10 py-4 text-base font-semibold text-[var(--ink)] hover:bg-[var(--orange)]/90 transition"
         >
           Request an invite →
         </a>
-        <p className="mt-4 text-sm text-amber-200/60">
-          We&apos;ll get back within 48 hours.
-        </p>
+        <p className="mt-4 text-xs text-[var(--bg)]/40">We reply within 48 hours.</p>
       </div>
     </section>
   );
@@ -339,30 +460,15 @@ function CTA() {
 
 function Footer() {
   return (
-    <footer className="border-t border-amber-900/10 bg-amber-50">
-      <div className="mx-auto max-w-6xl px-6 py-12">
-        <div className="flex flex-wrap items-start justify-between gap-8">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xl">🌳</span>
-              <span className="text-base font-black">Class on Time</span>
-            </div>
-            <p className="mt-3 text-sm text-amber-900/60 max-w-xs">
-              The commitment device for showing up. Built honestly, designed mean.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-x-10 gap-y-3 text-sm font-semibold text-amber-900/80">
-            <a href="#features" className="hover:text-amber-950">Features</a>
-            <a href="#how" className="hover:text-amber-950">How it works</a>
-            <a href="#pricing" className="hover:text-amber-950">Pricing</a>
-            <a href="#faq" className="hover:text-amber-950">FAQ</a>
-            <a href="#waitlist" className="hover:text-amber-950">Waitlist</a>
-          </div>
+    <footer className="border-t border-[var(--neutral)] bg-[var(--bg)]">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-6 px-6 py-8 text-sm text-[var(--ink)]/55">
+        <Wordmark className="text-lg text-[var(--ink)]" />
+        <div className="flex flex-wrap gap-6">
+          <a href="#faq" className="hover:text-[var(--ink)]">FAQ</a>
+          <a href="#pricing" className="hover:text-[var(--ink)]">Pricing</a>
+          <a href="https://github.com/thegirwhocodes/Go" className="hover:text-[var(--ink)]">Source</a>
         </div>
-        <div className="mt-12 pt-6 border-t border-amber-900/10 flex flex-wrap items-center justify-between gap-3 text-xs text-amber-900/50">
-          <span>© 2026 Class on Time</span>
-          <span className="font-mono">classontime.app</span>
-        </div>
+        <span className="font-mono text-xs">© 2026 go.</span>
       </div>
     </footer>
   );

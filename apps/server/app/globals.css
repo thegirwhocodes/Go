@@ -1,26 +1,67 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #FAFAF7;
+  --ink: #0A0A0A;
+  --orange: #FF5C1A;
+  --forest: #0B6B3A;
+  --neutral: #E8E6DD;
+  --neutral-card: #F2F0E8;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-bg: var(--bg);
+  --color-ink: var(--ink);
+  --color-orange: var(--orange);
+  --color-forest: var(--forest);
+  --color-neutral: var(--neutral);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-display: var(--font-display);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
 }
+
+.font-display {
+  font-family: var(--font-display), -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  letter-spacing: -0.025em;
+}
+
+/* Linear-style scroll-into-view reveal — pure CSS, no JS dep, respects reduced-motion */
+@keyframes go-reveal {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  animation: go-reveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 30%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { animation: none; opacity: 1; transform: none; }
+}
+
+/* Map route stroke draws from start to destination */
+@keyframes route-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.route-line {
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+  animation: route-draw 3s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards infinite;
+}
+
+/* Walking sprite advances along the route */
+@keyframes walk {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(0, -2px); }
+}
+
+.walk-bob { animation: walk 0.8s ease-in-out infinite; }
