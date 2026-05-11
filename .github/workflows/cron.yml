@@ -1,0 +1,40 @@
+name: external crons
+
+# Vercel Hobby plan can't run sub-daily crons. GitHub Actions runs every 5
+# minutes for free and pokes the three frequent endpoints. Each endpoint is
+# idempotent (short-circuits if there's no work to do), so over-triggering
+# is safe.
+#
+# Required repo settings:
+#   Secret  VERCEL_CRON_SECRET = the CRON_SECRET env var on Vercel
+#   Variable APP_URL          = the Vercel production URL (no trailing slash)
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch: {}
+
+concurrency:
+  group: cron
+  cancel-in-progress: false
+
+jobs:
+  poke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: calendar-sync
+        run: |
+          curl -sS --max-time 60 \
+            "${{ vars.APP_URL }}/api/cron/calendar-sync?secret=${{ secrets.VERCEL_CRON_SECRET }}" \
+            | head -c 1000
+      - name: departure-tick
+        run: |
+          curl -sS --max-time 60 \
+            "${{ vars.APP_URL }}/api/cron/departure-tick?secret=${{ secrets.VERCEL_CRON_SECRET }}" \
+            | head -c 1000
+      - name: penalty-charges
+        run: |
+          curl -sS --max-time 60 \
+            "${{ vars.APP_URL }}/api/cron/penalty-charges?secret=${{ secrets.VERCEL_CRON_SECRET }}" \
+            | head -c 1000
