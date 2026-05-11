@@ -1,0 +1,44 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# builds
+dist/
+build/
+out/
+.next/
+.expo/
+.expo-shared/
+
+# env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# OS / editors
+.DS_Store
+*.log
+.vscode/
+.idea/
+
+# vercel
+.vercel/
+
+# claude code per-user state and locally-installed skills
+.claude/
+.claude-sessions/
+.agents/
+skills/
+skills-lock.json
+
+# native
+ios/
+android/
+*.keystore
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+.vercel
