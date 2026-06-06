@@ -1,27 +1,27 @@
-# Class on Time
+# Go
 
-> Uber for walking to class. Reads my calendar, alerts me to leave so I arrive 30 minutes early, and charges me $100 every time I'm late.
+iOS commitment device. Charges me $100 every time I'm late to class.
 
-See [`PLAN.md`](./PLAN.md) for the full design and build order.
+→ Live: https://go-place.vercel.app
 
-## Layout
+## What it does
 
-- `apps/mobile` — Expo (iOS-first) app with Mapbox cartoon map + sprite avatar
-- `apps/server` — Next.js 15 on Vercel: API routes, Vercel Cron, Stripe, Google Calendar sync
-- `packages/db` — Drizzle schema + migrations (Neon Postgres)
-- `packages/shared` — Shared TypeScript types
+Reads my Google Calendar. Computes a walking ETA from my current GPS to each event's geocoded address. Sends a "leave now" push thirty minutes before each event. The moment my GPS misses the geofence, an off-session Stripe charge fires against my own card.
 
-## Getting started
+Removing a payment method takes seven days. The anti-escape mechanism is the entire point.
 
-```bash
-# install workspaces
-npm install
+## How it works
 
-# start the Next.js server
-npm run dev:server
-
-# start the Expo dev client
-npm run dev:mobile
+```
+Google Calendar sync → Mapbox geocoding → walking-ETA computation
+  → Expo push 30 min before leave-time → GPS geofence check at event start
+  → on miss: Stripe Financial Connections off-session charge → seven-day lockup
 ```
 
-Environment variables live in `apps/server/.env.local` and `apps/mobile/.env.local` — see each `.env.example`.
+Voice rollcall every morning: a Claude-Haiku intent classifier listens to my plan and reschedules the geofences.
+
+## Stack
+Expo (iOS) · Next.js 16 (server, Vercel) · Postgres (Neon, 9-table schema) · Stripe Financial Connections · Mapbox · Whisper + Claude Haiku · GitHub Actions cron (every 5 min)
+
+## Status
+Private alpha. Marketing site is live; iOS app on EAS dev client.
