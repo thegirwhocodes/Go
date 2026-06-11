@@ -1,5 +1,9 @@
 # Go
 
+<p align="center">
+  <img src="apps/mobile/assets/icon.png" alt="Go app icon" width="120" />
+</p>
+
 iOS commitment device. Charges me when I am late.
 
 Live: https://go-place.vercel.app
