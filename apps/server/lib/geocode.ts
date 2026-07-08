@@ -1,3 +1,6 @@
+import { getDb, schema } from '@class-on-time/db';
+import { and, eq } from 'drizzle-orm';
+
 // Forward geocoding. Mapbox returns the campus centroid for every Wesleyan
 // building query, so for known places on/near campus we use a hardcoded
 // lookup keyed on substrings of the query. Mapbox is the fallback for
@@ -29,7 +32,81 @@ export interface GeocodeResult {
   lat: number;
   lng: number;
   placeName: string;
-  source: 'wesleyan_table' | 'mapbox';
+  source: 'user_alias' | 'wesleyan_table' | 'mapbox';
+  relevance?: number;
+}
+
+export function normalizeLocationPhrase(query: string): string {
+  return query
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ');
+}
+
+export async function geocodeForUser(
+  userId: string,
+  query: string,
+): Promise<GeocodeResult | null> {
+  const normalized = normalizeLocationPhrase(query);
+  if (normalized) {
+    const alias = await getDb()
+      .select()
+      .from(schema.userLocationAliases)
+      .where(
+        and(
+          eq(schema.userLocationAliases.userId, userId),
+          eq(schema.userLocationAliases.normalizedPhrase, normalized),
+          eq(schema.userLocationAliases.confirmedByUser, true),
+        ),
+      )
+      .limit(1);
+
+    if (alias[0]) {
+      return {
+        lat: alias[0].resolvedLat,
+        lng: alias[0].resolvedLng,
+        placeName: alias[0].resolvedLocationText,
+        source: 'user_alias',
+        relevance: 1,
+      };
+    }
+  }
+
+  const result = await geocode(query);
+  if (result && normalized && result.source === 'mapbox' && (result.relevance ?? 0) < 0.8) {
+    await rememberLocationAliasSuggestion(userId, normalized, result);
+  }
+  return result;
+}
+
+async function rememberLocationAliasSuggestion(
+  userId: string,
+  normalizedPhrase: string,
+  result: GeocodeResult,
+) {
+  const existing = await getDb()
+    .select({ id: schema.userLocationAliases.id })
+    .from(schema.userLocationAliases)
+    .where(
+      and(
+        eq(schema.userLocationAliases.userId, userId),
+        eq(schema.userLocationAliases.normalizedPhrase, normalizedPhrase),
+      ),
+    )
+    .limit(1);
+  if (existing[0]) return;
+
+  await getDb().insert(schema.userLocationAliases).values({
+    userId,
+    normalizedPhrase,
+    resolvedLocationText: result.placeName,
+    resolvedLat: result.lat,
+    resolvedLng: result.lng,
+    confirmedByUser: false,
+  });
 }
 
 export async function geocode(query: string): Promise<GeocodeResult | null> {
@@ -50,7 +127,7 @@ export async function geocode(query: string): Promise<GeocodeResult | null> {
   const res = await fetch(url, { cache: 'no-store' });
   if (!res.ok) return null;
   const json = (await res.json()) as {
-    features: Array<{ place_name: string; center: [number, number] }>;
+    features: Array<{ place_name: string; center: [number, number]; relevance?: number }>;
   };
   const top = json.features[0];
   if (!top) return null;
@@ -59,5 +136,6 @@ export async function geocode(query: string): Promise<GeocodeResult | null> {
     lng: top.center[0],
     placeName: top.place_name,
     source: 'mapbox',
+    relevance: top.relevance,
   };
 }

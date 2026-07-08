@@ -1,5 +1,6 @@
 import { getStripe } from '@/lib/stripe';
 import { getDb, schema } from '@class-on-time/db';
+import { rememberStripePaymentMethod } from '@/lib/payment-methods';
 import { eq } from 'drizzle-orm';
 
 export const runtime = 'nodejs';
@@ -25,8 +26,15 @@ export async function POST(req: Request) {
   switch (event.type) {
     case 'payment_intent.succeeded': {
       const pi = event.data.object;
-      const arrivalId = (pi.metadata as Record<string, string>).arrival_id;
-      if (arrivalId) {
+      const metadata = pi.metadata as Record<string, string>;
+      const chargeId = metadata.charge_id;
+      const arrivalId = metadata.arrival_id;
+      if (chargeId) {
+        await db
+          .update(schema.charges)
+          .set({ status: 'succeeded', stripeChargeId: pi.id })
+          .where(eq(schema.charges.id, chargeId));
+      } else if (arrivalId) {
         await db
           .update(schema.charges)
           .set({ status: 'succeeded', stripeChargeId: pi.id })
@@ -36,8 +44,18 @@ export async function POST(req: Request) {
     }
     case 'payment_intent.payment_failed': {
       const pi = event.data.object;
-      const arrivalId = (pi.metadata as Record<string, string>).arrival_id;
-      if (arrivalId) {
+      const metadata = pi.metadata as Record<string, string>;
+      const chargeId = metadata.charge_id;
+      const arrivalId = metadata.arrival_id;
+      if (chargeId) {
+        await db
+          .update(schema.charges)
+          .set({
+            status: 'failed',
+            failureReason: pi.last_payment_error?.message ?? 'unknown',
+          })
+          .where(eq(schema.charges.id, chargeId));
+      } else if (arrivalId) {
         await db
           .update(schema.charges)
           .set({
@@ -50,9 +68,9 @@ export async function POST(req: Request) {
     }
     case 'payment_method.detached': {
       // Anti-escape: if Stripe tells us a payment method was detached outside
-      // our normal lockup flow, mark every method for that customer as
-      // pending_removal so the user is forced to re-onboard before the next
-      // charge cycle. The lockup-sweep cron handles the actual delete.
+      // our normal lockup flow, mirror that loss locally. If this was the
+      // user's last active method, /api/me reports paymentLocked=true and the
+      // app forces re-onboarding before the next commitment cycle.
       const pm = event.data.object;
       const customerId = typeof pm.customer === 'string' ? pm.customer : null;
       if (customerId) {
@@ -88,16 +106,12 @@ export async function POST(req: Request) {
           const pm = await getStripe().paymentMethods.retrieve(pmId);
           const last4 = pm.card?.last4 ?? pm.us_bank_account?.last4 ?? null;
           const type = pm.type === 'us_bank_account' ? 'us_bank_account' : 'apple_pay';
-          await db
-            .insert(schema.paymentMethods)
-            .values({
-              userId: userRow[0].id,
-              stripePmId: pmId,
-              type,
-              last4,
-              status: 'active',
-            })
-            .onConflictDoNothing();
+          await rememberStripePaymentMethod(db, {
+            userId: userRow[0].id,
+            stripePmId: pmId,
+            type,
+            last4,
+          });
         }
       }
       break;

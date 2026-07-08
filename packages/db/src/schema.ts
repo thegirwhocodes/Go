@@ -83,10 +83,12 @@ export const paymentMethods = pgTable('payment_methods', {
 export const charges = pgTable('charges', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  arrivalId: uuid('arrival_id').notNull().references(() => arrivals.id, { onDelete: 'cascade' }),
+  arrivalId: uuid('arrival_id').references(() => arrivals.id, { onDelete: 'cascade' }),
+  eventId: uuid('event_id').references(() => events.id, { onDelete: 'cascade' }),
   paymentMethodId: uuid('payment_method_id').references(() => paymentMethods.id),
   stripeChargeId: text('stripe_charge_id'),
   amountCents: integer('amount_cents').notNull(),
+  kind: text('kind').notNull().default('late_arrival'),
   status: text('status').notNull().default('pending'),
   failureReason: text('failure_reason'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),

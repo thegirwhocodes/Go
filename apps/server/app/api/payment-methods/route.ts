@@ -1,5 +1,6 @@
 import { getDb, schema } from '@class-on-time/db';
 import { PAYMENT_REMOVAL_LOCKUP_MS } from '@class-on-time/shared';
+import { requireUser, unauthorized } from '@/lib/session';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 
@@ -8,11 +9,25 @@ export const runtime = 'nodejs';
 // DELETE schedules detachment 7 days from now. We never detach inline — the
 // nightly lockup-sweep cron is the only place that actually calls Stripe.
 const deleteBody = z.object({
-  userId: z.string().uuid(),
   paymentMethodId: z.string().uuid(),
 });
 
+export async function GET(req: Request) {
+  const user = await requireUser(req);
+  if (!user) return unauthorized();
+
+  const rows = await getDb()
+    .select()
+    .from(schema.paymentMethods)
+    .where(eq(schema.paymentMethods.userId, user.id));
+
+  return Response.json(rows);
+}
+
 export async function DELETE(req: Request) {
+  const user = await requireUser(req);
+  if (!user) return unauthorized();
+
   const json = await req.json().catch(() => null);
   const parsed = deleteBody.safeParse(json);
   if (!parsed.success) return Response.json({ error: parsed.error }, { status: 400 });
@@ -31,7 +46,7 @@ export async function DELETE(req: Request) {
     .where(
       and(
         eq(schema.paymentMethods.id, parsed.data.paymentMethodId),
-        eq(schema.paymentMethods.userId, parsed.data.userId),
+        eq(schema.paymentMethods.userId, user.id),
       ),
     )
     .returning();
@@ -41,7 +56,7 @@ export async function DELETE(req: Request) {
   }
 
   await db.insert(schema.lockupLog).values({
-    userId: parsed.data.userId,
+    userId: user.id,
     paymentMethodId: parsed.data.paymentMethodId,
     action: 'detach_requested',
     executesAt: removableAt,

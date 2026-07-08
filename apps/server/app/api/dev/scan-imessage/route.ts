@@ -3,8 +3,8 @@ import { getDb, schema } from '@class-on-time/db';
 import { computeRequiredArrival } from '@class-on-time/shared';
 import { groupByThread, readRecentMessages } from '@/lib/imessage';
 import { extractCommitments, type ConversationLine } from '@/lib/extract-commitments';
-import { geocode } from '@/lib/geocode';
-import { eq } from 'drizzle-orm';
+import { geocodeForUser } from '@/lib/geocode';
+import { and, eq } from 'drizzle-orm';
 
 export const runtime = 'nodejs';
 
@@ -67,31 +67,42 @@ export async function GET(req: Request) {
       let destinationLng: number | null = null;
       let locationText = c.location;
       if (locationText) {
-        const geo = await geocode(locationText);
+        const geo = await geocodeForUser(userId, locationText);
         if (geo) {
           destinationLat = geo.lat;
           destinationLng = geo.lng;
           locationText = geo.placeName;
         }
       }
-      if (!destinationLat || !destinationLng) continue;
+      if (destinationLat == null || destinationLng == null) continue;
 
-      await db
-        .insert(schema.events)
-        .values({
+      const sourceEventId = `imessage:${threadKey}:${c.evidenceQuote.slice(0, 80)}`;
+      const existing = await db
+        .select({ id: schema.events.id })
+        .from(schema.events)
+        .where(and(eq(schema.events.userId, userId), eq(schema.events.sourceEventId, sourceEventId)))
+        .limit(1);
+      const values = {
+        title: c.title,
+        locationText,
+        destinationLat,
+        destinationLng,
+        startsAt,
+        endsAt,
+        requiredArrivalAt: computeRequiredArrival(startsAt),
+        source: 'imessage',
+        rawJson: c as unknown as Record<string, unknown>,
+      };
+
+      if (existing[0]) {
+        await db.update(schema.events).set(values).where(eq(schema.events.id, existing[0].id));
+      } else {
+        await db.insert(schema.events).values({
           userId,
-          sourceEventId: `imessage:${threadKey}:${c.evidenceQuote.slice(0, 80)}`,
-          title: c.title,
-          locationText,
-          destinationLat,
-          destinationLng,
-          startsAt,
-          endsAt,
-          requiredArrivalAt: computeRequiredArrival(startsAt),
-          source: 'imessage',
-          rawJson: c as unknown as Record<string, unknown>,
-        })
-        .onConflictDoNothing();
+          sourceEventId,
+          ...values,
+        });
+      }
       inserted += 1;
     }
     if (commitments.length > 0) {

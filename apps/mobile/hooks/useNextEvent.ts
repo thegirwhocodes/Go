@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { setArrivalGeofences } from '@/lib/location';
 
 interface NextEvent {
   id: string;
@@ -18,6 +19,12 @@ export function useNextEvent(): NextEvent | null {
     async function tick() {
       const events = await api.getUpcomingEvents();
       if (cancelled) return;
+      const geofenceTargets = events
+        .filter((e) => e.destinationLat != null && e.destinationLng != null)
+        .map((e) => ({ eventId: e.id, lat: e.destinationLat!, lng: e.destinationLng! }));
+      if (geofenceTargets.length > 0) {
+        await setArrivalGeofences(geofenceTargets).catch(() => undefined);
+      }
       const ev = events[0];
       if (!ev) return setNext(null);
       setNext({

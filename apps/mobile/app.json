@@ -17,10 +17,14 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.naomi.classontime",
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "Class on Time uses your location to figure out how long it'll take you to walk to your next class.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "Class on Time needs background location so it can wake you up to leave for class on time, even if the app is closed.",
-        "NSLocationAlwaysUsageDescription": "Class on Time needs background location to detect when you arrive at class.",
-        "UIBackgroundModes": ["location", "fetch", "remote-notification"],
+        "NSLocationWhenInUseUsageDescription": "Go uses your location to figure out how long it'll take you to walk to your next class.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Go needs background location so it can wake you up to leave for class on time, even if the app is closed.",
+        "NSLocationAlwaysUsageDescription": "Go needs background location to detect when you arrive at class.",
+        "UIBackgroundModes": [
+          "location",
+          "fetch",
+          "remote-notification"
+        ],
         "ITSAppUsesNonExemptEncryption": false
       }
     },
@@ -47,7 +51,7 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Class on Time uses your location to wake you up at the right moment to walk to class."
+          "locationAlwaysAndWhenInUsePermission": "Go uses your location to wake you up at the right moment to walk to class."
         }
       ],
       [
@@ -60,17 +64,17 @@
       [
         "expo-speech-recognition",
         {
-          "microphonePermission": "Class on Time uses the mic so you can confirm each commitment out loud.",
+          "microphonePermission": "Go uses the mic so you can confirm each commitment out loud.",
           "speechRecognitionPermission": "Transcribes your morning roll-call on-device — nothing leaves your phone for transcription."
         }
       ],
       [
-        "@rnmapbox/maps",
+        "@stripe/stripe-react-native",
         {
-          "RNMapboxMapsImpl": "mapbox",
-          "RNMapboxMapsDownloadToken": "pk.eyJ1IjoibmFvbWktaXZpZSIsImEiOiJjbW96MXpsdmIwZWw4MnJvcnJ2aW43cG50In0.h95iR6FYAi_5GVBl33Z9SA"
+          "enableGooglePay": false
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "extra": {
       "router": {

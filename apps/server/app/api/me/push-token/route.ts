@@ -6,13 +6,9 @@ import { z } from 'zod';
 export const runtime = 'nodejs';
 
 const body = z.object({
-  lat: z.number(),
-  lng: z.number(),
-  expoPushToken: z.string().optional(),
+  expoPushToken: z.string().min(1),
 });
 
-// The mobile app pings this every few minutes (or on significant movement) so
-// the departure-tick cron has a fresh starting point for walking-ETA math.
 export async function POST(req: Request) {
   const user = await requireUser(req);
   if (!user) return unauthorized();
@@ -21,15 +17,10 @@ export async function POST(req: Request) {
   const parsed = body.safeParse(json);
   if (!parsed.success) return Response.json({ error: parsed.error }, { status: 400 });
 
-  const db = getDb();
-  await db
+  await getDb()
     .update(schema.users)
-    .set({
-      currentLat: parsed.data.lat,
-      currentLng: parsed.data.lng,
-      currentLocUpdatedAt: new Date(),
-      expoPushToken: parsed.data.expoPushToken ?? user.expoPushToken,
-    })
+    .set({ expoPushToken: parsed.data.expoPushToken })
     .where(eq(schema.users.id, user.id));
+
   return Response.json({ ok: true });
 }

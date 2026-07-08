@@ -1,6 +1,7 @@
 import { getDb, schema } from '@class-on-time/db';
 import { cancellationFeeCents } from '@class-on-time/shared';
-import { eq } from 'drizzle-orm';
+import { requireUser, unauthorized } from '@/lib/session';
+import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import Anthropic from '@anthropic-ai/sdk';
 
@@ -76,6 +77,9 @@ If the user is sarcastic or hedging, prefer "unclear" so the app prompts again.`
 }
 
 export async function POST(req: Request) {
+  const user = await requireUser(req);
+  if (!user) return unauthorized();
+
   const json = await req.json().catch(() => null);
   const parsed = body.safeParse(json);
   if (!parsed.success) return Response.json({ error: parsed.error }, { status: 400 });
@@ -84,7 +88,7 @@ export async function POST(req: Request) {
   const eventRow = await db
     .select()
     .from(schema.events)
-    .where(eq(schema.events.id, parsed.data.eventId))
+    .where(and(eq(schema.events.id, parsed.data.eventId), eq(schema.events.userId, user.id)))
     .limit(1);
   const event = eventRow[0];
   if (!event) return Response.json({ error: 'event not found' }, { status: 404 });

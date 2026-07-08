@@ -3,8 +3,8 @@ import { getDb, schema } from '@class-on-time/db';
 import { computeRequiredArrival } from '@class-on-time/shared';
 import { fetchUpcomingEvents } from '@/lib/google-calendar';
 import { extractLocations, type InputEvent } from '@/lib/extract-location';
-import { geocode } from '@/lib/geocode';
-import { eq } from 'drizzle-orm';
+import { geocodeForUser } from '@/lib/geocode';
+import { and, eq } from 'drizzle-orm';
 
 export const runtime = 'nodejs';
 
@@ -67,33 +67,45 @@ export async function GET(req: Request) {
       }
 
       if (locationText) {
-        const geo = await geocode(locationText);
+        const geo = await geocodeForUser(user.id, locationText);
         if (geo) {
           destinationLat = geo.lat;
           destinationLng = geo.lng;
+          locationText = geo.placeName;
         }
       }
 
-      if (!destinationLat || !destinationLng) {
+      if (destinationLat == null || destinationLng == null) {
         skipped += 1;
         continue;
       }
 
-      await db
-        .insert(schema.events)
-        .values({
+      const existing = await db
+        .select({ id: schema.events.id })
+        .from(schema.events)
+        .where(and(eq(schema.events.userId, user.id), eq(schema.events.sourceEventId, ev.id!)))
+        .limit(1);
+
+      const values = {
+        title,
+        locationText,
+        destinationLat,
+        destinationLng,
+        startsAt,
+        endsAt,
+        requiredArrivalAt,
+        rawJson: ev,
+      };
+
+      if (existing[0]) {
+        await db.update(schema.events).set(values).where(eq(schema.events.id, existing[0].id));
+      } else {
+        await db.insert(schema.events).values({
           userId: user.id,
           sourceEventId: ev.id!,
-          title,
-          locationText,
-          destinationLat,
-          destinationLng,
-          startsAt,
-          endsAt,
-          requiredArrivalAt,
-          rawJson: ev,
-        })
-        .onConflictDoNothing();
+          ...values,
+        });
+      }
       synced += 1;
     }
   }

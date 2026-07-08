@@ -1,5 +1,7 @@
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
+import { api } from './api';
+import { getCurrentUserId } from './auth';
 
 const BG_LOCATION_TASK = 'cot.bg-location';
 const ARRIVAL_GEOFENCE_TASK = 'cot.geofence';
@@ -10,8 +12,8 @@ TaskManager.defineTask(BG_LOCATION_TASK, async ({ data, error }) => {
   const { locations } = data as { locations: Location.LocationObject[] };
   const last = locations.at(-1);
   if (!last) return;
-  // TODO: forward to /api/me/location with stored userId.
-  console.log('bg location', last.coords);
+  if (!(await getCurrentUserId())) return;
+  await api.pushLocation(last.coords.latitude, last.coords.longitude).catch(() => undefined);
 });
 
 TaskManager.defineTask(ARRIVAL_GEOFENCE_TASK, async ({ data, error }) => {
@@ -22,8 +24,16 @@ TaskManager.defineTask(ARRIVAL_GEOFENCE_TASK, async ({ data, error }) => {
     region: Location.LocationRegion;
   };
   if (eventType !== Location.GeofencingEventType.Enter) return;
-  // TODO: POST to /api/arrivals with the event id stored on the region identifier.
-  console.log('arrived at', region.identifier);
+  if (!region.identifier) return;
+  if (!(await getCurrentUserId())) return;
+  const pos = await Location.getCurrentPositionAsync({}).catch(() => null);
+  await api
+    .reportArrival({
+      eventId: region.identifier,
+      lat: pos?.coords.latitude ?? region.latitude,
+      lng: pos?.coords.longitude ?? region.longitude,
+    })
+    .catch(() => undefined);
 });
 
 export async function ensureBackgroundLocation(): Promise<boolean> {

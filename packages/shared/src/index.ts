@@ -74,6 +74,17 @@ export interface PaymentMethod {
   removableAt: string | null;
 }
 
+export interface LocationAlias {
+  id: string;
+  userId: string;
+  normalizedPhrase: string;
+  resolvedLocationText: string;
+  resolvedLat: number;
+  resolvedLng: number;
+  confirmedByUser: boolean;
+  createdAt: string;
+}
+
 export function computeRequiredArrival(eventStartsAt: Date): Date {
   return new Date(eventStartsAt.getTime() - EARLY_ARRIVAL_WINDOW_MS);
 }

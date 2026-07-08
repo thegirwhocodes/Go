@@ -1,5 +1,6 @@
 import { getDb, schema } from '@class-on-time/db';
 import { googleOauthClient } from '@/lib/google-calendar';
+import { createSessionToken } from '@/lib/session';
 import { google } from 'googleapis';
 import { eq } from 'drizzle-orm';
 
@@ -47,8 +48,9 @@ export async function GET(req: Request) {
       scope: tokens.scope ?? null,
     });
 
-  // TODO: issue our own session cookie/JWT and redirect into the mobile deep
-  // link. Stubbed for the scaffold — see PLAN.md §5.1.
   const redirectTo = decodeURIComponent(url.searchParams.get('state') ?? '/');
-  return Response.redirect(new URL(redirectTo, url).toString(), 302);
+  const target = new URL(redirectTo, url.origin);
+  target.searchParams.set('userId', userId);
+  target.searchParams.set('token', createSessionToken(userId));
+  return Response.redirect(target.toString(), 302);
 }

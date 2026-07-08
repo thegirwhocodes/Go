@@ -17,8 +17,8 @@ export default function OnboardingCalendar() {
       </View>
       <BigButton
         onPress={async () => {
-          await startGoogleSignIn();
-          router.push('/onboarding/payment');
+          const signedIn = await startGoogleSignIn();
+          if (signedIn) router.push('/onboarding/payment');
         }}
       >
         sign in with Google
